@@ -297,29 +297,28 @@ export default function CanvasEditor() {
   }
 
   return (
-    <div className="w-full h-[70vh] flex items-center justify-center" ref={containerRef}>
-      <div
-        ref={canvasRef}
-        className="w-[1000px] h-[620px] bg-[#f2efe9] rounded-md shadow-inner relative overflow-hidden"
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => {
-          e.preventDefault()
-          const src = e.dataTransfer.getData("text/plain")
-          if (src) {
-            dispatch(setActiveImage(src))
-          }
-        }}
-      >
-        <div className="absolute top-3 right-3 flex gap-2 z-20">
-          <button onClick={() => zoom(1.1)} className="px-2 py-1 bg-white rounded border shadow-sm text-sm">Zoom +</button>
-          <button onClick={() => zoom(0.9)} className="px-2 py-1 bg-white rounded border shadow-sm text-sm">Zoom -</button>
-          <button onClick={onReset} className="px-2 py-1 bg-white rounded border shadow-sm text-sm">Reset</button>
-        </div>
-        <div className="absolute left-4 bottom-4 text-xs text-gray-500 z-20">
-          Drag image from left panel into frame; use Zoom buttons to scale.  
-          You can drag/resize/rotate the frame; image + clip mask follow automatically.
-        </div>
-      </div>
+   <div className="w-full h-[60vh] md:h-[70vh] flex items-center justify-center" ref={containerRef}>
+  <div
+    ref={canvasRef}
+    className="w-full max-w-[1000px] h-full bg-[#f2efe9] rounded-md shadow-inner relative overflow-hidden"
+    onDragOver={(e) => e.preventDefault()}
+    onDrop={(e) => {
+      e.preventDefault()
+      const src = e.dataTransfer.getData("text/plain")
+      if (src) dispatch(setActiveImage(src))
+    }}
+  >
+    <div className="absolute top-3 right-3 flex gap-2 z-20">
+      <button onClick={() => zoom(1.1)} className="px-2 py-1 bg-white rounded border shadow-sm text-xs md:text-sm">Zoom +</button>
+      <button onClick={() => zoom(0.9)} className="px-2 py-1 bg-white rounded border shadow-sm text-xs md:text-sm">Zoom -</button>
+      <button onClick={onReset} className="px-2 py-1 bg-white rounded border shadow-sm text-xs md:text-sm">Reset</button>
     </div>
+    <div className="absolute left-2 md:left-4 bottom-2 md:bottom-4 text-xs md:text-sm text-gray-500 z-20">
+      Drag image from left panel into frame; use Zoom buttons to scale.
+      You can drag/resize/rotate the frame; image + clip mask follow automatically.
+    </div>
+  </div>
+</div>
+
   )
 }
