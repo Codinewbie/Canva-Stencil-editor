@@ -20,12 +20,12 @@ export default function LeftPanel() {
   }
 
   return (
-    <div className="w-full md:w-72 bg-white border-r p-4">
-  <h2 className="text-lg md:text-xl font-semibold mb-4">Uploads</h2>
-  <div className="mb-4">
+    <div className="w-full h-full bg-white p-4">
+  <h2 className=" font-semibold mb-4">Uploads</h2>
+  <div className="mb-4 ">
     <button
       onClick={() => fileRef.current.click()}
-      className="w-full py-2 px-3 rounded bg-purple-600 text-white hover:bg-purple-700 text-sm md:text-base"
+      className="w-full py-2 px-3 rounded bg-purple-600 text-xs sm:text-sm md:text-base text-white hover:bg-purple-700"
     >
       Upload files
     </button>
@@ -40,8 +40,8 @@ export default function LeftPanel() {
   </div>
 
   <div>
-    <p className="text-sm md:text-base text-gray-500 mb-2">Uploaded</p>
-    <div className="space-y-3 max-h-[40vh] md:max-h-[60vh] overflow-y-auto">
+    <p className="text-sm  text-gray-500 mb-2">Uploaded</p>
+    <div className="space-y-3 max-h-[70vh] overflow-y-auto">
       {uploadedImages.length > 0 ? (
         uploadedImages.map((img, idx) => (
           <div
@@ -70,7 +70,7 @@ export default function LeftPanel() {
           </div>
         ))
       ) : (
-        <div className="border rounded p-4 text-gray-400 text-sm md:text-base">
+        <div className="border rounded p-2 text-gray-400 text-sm">
           No uploads yet — try uploading a photo.
         </div>
       )}

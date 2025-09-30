@@ -5,16 +5,16 @@ import Toolbar from './components/Toolbar.jsx'
 
 export default function App() {
   return (
-    <div className="h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen grid grid-cols-5 border-2 border-yellow-600">
       {/* Left Panel collapses on small screens */}
-      <div className="w-full md:w-72 flex-shrink-0">
+      <div className="w-full h-screen col-span-5 sm:col-span-1 flex-shrink-0  ">
         <LeftPanel />
       </div>
 
-      <div className="flex-1 flex flex-col">
+      <div className="col-span-5 sm:col-span-4   flex-1 flex flex-col border-4">
         <Toolbar />
-        <div className="flex-1 p-4 md:p-6">
-          <div className="bg-white shadow-sm rounded-md h-full flex items-center justify-center overflow-hidden">
+        <div className="flex-1 p-4">
+          <div className="bg-white shadow-sm rounded-md h-screen flex items-center justify-center overflow-hidden">
             <CanvasEditor />
           </div>
         </div>

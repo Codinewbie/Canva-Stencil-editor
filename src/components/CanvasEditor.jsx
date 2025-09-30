@@ -297,7 +297,7 @@ export default function CanvasEditor() {
   }
 
   return (
-   <div className="w-full h-[60vh] md:h-[70vh] flex items-center justify-center" ref={containerRef}>
+   <div className="w-full h-full m-16  flex items-center justify-center" ref={containerRef}>
   <div
     ref={canvasRef}
     className="w-full max-w-[1000px] h-full bg-[#f2efe9] rounded-md shadow-inner relative overflow-hidden"
