@@ -63,7 +63,7 @@ export default function LeftPanel({ toggleLeftPanel }) {
     uploadedImages.map((img, idx) => (
       <div
         key={idx}
-        className={`relative box-border border bg-gray-100 col-span-1 flex items-center justify-center  rounded cursor-pointer transition-all duration-200 ${
+        className={`relative box-border border bg-gray-100 col-span-2 md:col-span-1 flex items-center justify-center  rounded cursor-pointer transition-all duration-200 ${
           selectedImageIdx === idx
             ? 'border-4 border-purple-600 shadow-lg'
             : 'border-gray-300'

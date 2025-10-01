@@ -11,7 +11,7 @@ export default function App() {
       {/* Left Panel */}
       <div
   className={`
-    col-span-5 sm:col-span-2 
+    col-span-1 sm:col-span-2 
     bg-white border-r border-[#262d38] transition-transform duration-300
     fixed sm:static top-0 left-0 h-full z-20
     ${isLeftPanelOpen ? 'translate-x-0' : '-translate-x-full'}
