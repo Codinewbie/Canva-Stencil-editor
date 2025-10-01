@@ -87,7 +87,7 @@ export default function LeftPanel({ toggleLeftPanel }) {
       </div>
     ))
   ) : (
-    <div className="border box-border col-span-2 text-center w-full border-[#295aac] rounded p-2 text-gray-400 text-sm">
+    <div className="border box-border col-span-2 text-center w-full border-[#262d38] rounded p-2 text-gray-400 text-sm">
       No uploads yet — try uploading a photo.
     </div>
   )}

@@ -1,7 +1,6 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { undo, resetTransform } from '../store/editorSlice'
-import { Undo2,Redo2 } from 'lucide-react';
+import aman from '../images/aman.jpg';
 
 export default function Toolbar({ toggleLeftPanel, isLeftPanelOpen }) {
   const dispatch = useDispatch()
@@ -16,28 +15,25 @@ export default function Toolbar({ toggleLeftPanel, isLeftPanelOpen }) {
         >
           {isLeftPanelOpen ? '✕' : '☰'}
         </button>
-
-        {/* <button
-          onClick={() => dispatch(undo())}
-          className="px-2 py-1 pb-1.5 md:px-3 rounded-md border-[#295aac] text-[#295aac] space-x-2 flex flex-rows items-center justify-center border bg-[#262d38]  text-xs md:text-sm"
-        >
-          <Undo2 size={16} />
-          <h5 className ="font-semibold">Undo</h5>
-        </button>
-
-        <button
-          onClick={() => dispatch(resetTransform())}
-          className="px-2 py-1 pb-1.5 md:px-3 text-[#295aac] rounded-md border border-[#295aac] space-x-2 flex flex-rows items-center justify-center bg-[#262d38]  text-xs md:text-sm"
-        >
-          <Redo2 size={16} />
-          <h5 className ="font-semibold">Redo</h5>
-        </button> */}
+       
       </div>
 
-      <div className="flex items-center font-bold gap-2 text-sm md:text-base text-gray-500">
+      <div className="flex items-center font-bold gap-2 text-xs sm:text-sm md:text-base text-gray-500">
         Stencil Editor
       </div>
-      <div />
+      <a href="https://github.com/Codinewbie" target="_blank" rel="noopener noreferrer" className="border-[#295aac] p-1 flex justify-start items-center rounded-md px-2 border space-x-2 ">
+          <div className="h-5 w-5 md:h-7 md:w-7 bg-gray-100  z-20 text-center flex justify-center  items-center rounded-full overflow-hidden">
+              <img
+                  src={aman} // Path relative to the public folder
+                  alt="aman image"
+                  width={40}
+                  height={40}
+                  className="object-cover rounded-full"
+              />
+          </div>
+          <div className="flex text-xs md:text-sm text-gray-500 font-bold items-center justify-center mb-1">Aman Kumar</div>
+      </a>
+      
     </div>
   )
 }
