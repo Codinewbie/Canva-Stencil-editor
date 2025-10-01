@@ -37,3 +37,41 @@ It’s designed to be simple yet powerful for basic photo editing and layout man
 ```bash
 git clone https://github.com/<your-username>/Canva-Stencil-editor.git
 cd Canva-Stencil-editor
+```
+
+### 2. Install dependencies
+```bash
+npm install
+```
+### 3. Start development server
+```bash
+npm run dev
+```
+Now open: http://localhost:5173
+### 4. Build for production
+```bash
+npm run build
+```
+
+📦 Deployment
+This project is configured to deploy on GitHub Pages.
+To deploy:
+
+### 4. Run for Deployment
+```bash
+npm run deploy
+```
+Your app will be live at:
+```cpp
+https://<your-username>.github.io/Canva-Stencil-editor/
+```
+
+📄 License
+This project is licensed under the MIT License.
+
+
+
+
+
+
+
