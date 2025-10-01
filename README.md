@@ -1,98 +1,77 @@
-# 🖌️ Stencil Editor (React + Fabric.js + Redux + Tailwind)
+# 🎨 Canva Stencil Editor
 
-A **Canvas-based Stencil Editor** inspired by Canva, built with **React, Vite, Redux, Tailwind CSS, and Fabric.js**.  
-It allows users to **upload images**, place them into a **stencil frame**, and adjust them with **drag, zoom, and reset controls**.
-
----
-
-## ✨ Features
-- 📤 Upload images via the **Uploads Panel**.
-- 🖼️ Drag & drop uploaded image into a **photo frame stencil**.
-- 🔍 Zoom In/Out inside the stencil.
-- 🎯 Move & Reposition images freely.
-- ♻️ Reset to restore image position.
-- ⚡ Built with **React + Redux + Fabric.js** for smooth performance.
+A **React + Fabric.js based stencil editor** where users can upload images, manage them from a left panel, and edit them on a dynamic canvas.  
+It’s designed to be simple yet powerful for basic photo editing and layout manipulation.
 
 ---
 
-📸 Screenshots
-
-<img width="1920" height="917" alt="{483EE708-1DC5-433A-901D-2A7F479C929D}" src="https://github.com/user-attachments/assets/ea25c984-086b-44cb-bdfc-36d9ed644096" />
-<img width="1908" height="924" alt="{9D23ADBD-6CE4-4802-A607-A87833793836}" src="https://github.com/user-attachments/assets/f624538b-cfb1-4a9f-86db-5bd8e43014b3" />
-
-
+## 🚀 Live Demo
+🔗 [View Project](https://<your-username>.github.io/Canva-Stencil-editor/)
 
 ---
 
 ## 🛠️ Tech Stack
-| Layer | Technology |
-|-------|------------|
-| Fast frontend development | React + Vite |
-| Canvas manipulation | Fabric.js |
-| State management | Redux Toolkit |
-| Tailwind CSS | Styling |
+- ⚛️ **React** – Component-based UI
+- 🎨 **TailwindCSS** – Styling and responsive layout
+- 🖼️ **Fabric.js** – Canvas rendering and image manipulation
+- 📦 **Redux Toolkit** – State management
+- ⚡ **Vite** – Fast development and build tool
 
 ---
 
-## 🎥 Demo Video
-
-Watch the demo video here:
-▶️ Watch Demo : https://drive.google.com/file/d/110f1OMoirIwJzktxEmDdpRqYDIgO8YEu/view?usp=drive_link
-
----
-
-## 📂 Project Structure
-```
-.
-Stencil-Editor/
-├── public/              # Static assets
-├── src/
-│   ├── components/
-│   │   ├── CanvasEditor.jsx   # Fabric.js canvas + stencil logic
-│   │   ├── LeftPanel.jsx      # Handles uploads & thumbnails
-│   │   ├── Toolbar.jsx        # Zoom, Reset, Undo controls
-│   ├── store/
-│   │   ├── editorSlice.js     # Redux slice for editor state
-│   │   └── store.js           # Redux store setup
-│   ├── App.jsx                # Main layout
-│   ├── main.jsx               # React entrypoint
-│   ├── index.css              # Global styles (Tailwind included)
-├── index.html
-├── vite.config.js
-├── tailwind.config.js
-├── postcss.config.js
-├── package.json
-└── README.md
-```
+## 📂 Features
+- Upload images (multiple supported).
+- Drag & drop images onto the canvas.
+- Undo / Reset actions from toolbar.
+- Responsive layout:
+  - On small screens → left panel collapses with toggle.
+  - On larger screens → left panel stays open (1/5th width).
+- Scrollable uploads panel (hidden scrollbar for cleaner UI).
+- Clean and modern UI with TailwindCSS.
 
 ---
 
-## ⚙️ Installation & Setup
+## 🖥️ Run Locally
 
+### 1. Clone the repo
 ```bash
-# 1️⃣ Clone Repository
-git clone https://github.com/CodePandaAkhilesh/Stencil-Editor.git
-cd Stencil-Editor
+git clone https://github.com/<your-username>/Canva-Stencil-editor.git
+cd Canva-Stencil-editor
+```
 
-# 2️⃣ Install Dependencies
+### 2. Install dependencies
+```bash
 npm install
-npm install fabric @reduxjs/toolkit react-redux
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
-
-# 4️⃣ Run App in Development Mode
+```
+### 3. Start development server
+```bash
 npm run dev
 ```
+Now open: http://localhost:5173
+### 4. Build for production
+```bash
+npm run build
+```
 
----
+📦 Deployment
+This project is configured to deploy on GitHub Pages.
+To deploy:
+
+### 4. Run for Deployment
+```bash
+npm run deploy
+```
+Your app will be live at:
+```cpp
+https://<your-username>.github.io/Canva-Stencil-editor/
+```
+
+📄 License
+This project is licensed under the MIT License.
 
 
-## 📞 Contact
 
-- Akhilesh Verma – 📧 av14021999@gmail.com    
 
----
 
-## 📜 License
 
-- MIT License
+
