@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import * as Fabric from 'fabric'
 import { useSelector, useDispatch } from 'react-redux'
 import { setTransform, resetTransform, setActiveImage } from '../store/editorSlice'
+import { Undo2 } from 'lucide-react';
 
 export default function CanvasEditor() {
   const containerRef = useRef(null)
@@ -11,7 +12,7 @@ export default function CanvasEditor() {
   const dispatch = useDispatch()
   const activeImage = useSelector(s => s.editor.activeImage)
 
-  const stencil = { width: 320, height: 380, rx: 8 }
+  const stencil = { width: 160, height: 200, rx: 8 }
 
   useEffect(() => {
     const canvasEl = document.createElement('canvas')
@@ -25,18 +26,38 @@ export default function CanvasEditor() {
     const c = new Fabric.fabric.Canvas(canvasEl, {
       selection: false,
       preserveObjectStacking: true,
-      backgroundColor: '#F7F5F0'
+      backgroundColor: '#151c26'
     })
     fabricRef.current = c
 
     function resize() {
-      const rect = containerRef.current.getBoundingClientRect()
-      c.setWidth(rect.width)
-      c.setHeight(rect.height)
-      c.calcOffset()
-      c.renderAll()
-      if (c.frameRect) centerFrame(c)
+  const rect = containerRef.current.getBoundingClientRect()
+  const c = fabricRef.current
+  c.setWidth(rect.width)
+  c.setHeight(rect.height)
+  c.calcOffset()
+
+  if (c.frameRect && c.maskRect) {
+    // Move frame and mask
+    centerFrame(c)
+
+    // Move attached image with mask
+    if (imageObjRef.current) {
+      const img = imageObjRef.current
+      const mask = c.maskRect
+      img.left = mask.left + mask.width / 2
+      img.top = mask.top + mask.height / 2
+      if (img.clipPath) {
+        img.clipPath.left = mask.left + mask.width / 2
+        img.clipPath.top = mask.top + mask.height / 2
+        img.clipPath.setCoords()
+      }
+      img.setCoords()
+      c.requestRenderAll()
     }
+  }
+}
+
     window.addEventListener('resize', resize)
     resize()
 
@@ -164,21 +185,43 @@ export default function CanvasEditor() {
   }, [activeImage])
 
   function centerFrame(c) {
-    const cw = c.getWidth()
-    const ch = c.getHeight()
-    const { width: w, height: h } = stencil
-    const left = (cw / 2) - (w / 2)
-    const top = (ch / 2) - (h / 2) - 10
-    if (c.maskRect) c.maskRect.set({ left, top, width: w, height: h })
-    if (c.frameRect) c.frameRect.set({ left: left + w / 2, top: top + h / 2 })
+  const cw = c.getWidth()
+  const ch = c.getHeight()
+  const { width: w, height: h } = stencil
+
+  // 20px above exact center
+  const left = (cw - w) / 2 -20;
+  const top = (ch - h) / 2 - 20
+
+  const mask = c.maskRect
+  const frame = c.frameRect
+
+  if (mask) mask.set({ left, top, width: w, height: h })
+  if (frame) frame.set({ left: left + w / 2, top: top + h / 2 })
+
+  // move attached image
+  if (imageObjRef.current) {
+    const img = imageObjRef.current
+    img.left = mask.left + mask.width / 2
+    img.top = mask.top + mask.height / 2
+    if (img.clipPath) {
+      img.clipPath.left = mask.left + mask.width / 2
+      img.clipPath.top = mask.top + mask.height / 2
+      img.clipPath.setCoords()
+    }
+    img.setCoords()
   }
+
+  c.requestRenderAll()
+}
+
 
   function createFrame(c) {
     const cw = c.getWidth()
     const ch = c.getHeight()
     const { width: w, height: h, rx } = stencil
-    const left = (cw / 2) - (w / 2)
-    const top = (ch / 2) - (h / 2) - 10
+    const left = (cw / 2) - (w / 2) -20
+    const top = (ch / 2) - (h / 2) - 20 // 20px above center
 
     const maskRect = new Fabric.fabric.Rect({
       left, top, width: w, height: h, rx,
@@ -196,7 +239,7 @@ export default function CanvasEditor() {
       width: w, height: h, rx,
       fill: 'transparent',
       stroke: '#7b3fe4',
-      strokeWidth: 3,
+      strokeWidth: 1,
       selectable: true,
       hasControls: true,
       lockRotation: false,
@@ -297,28 +340,46 @@ export default function CanvasEditor() {
   }
 
   return (
-   <div className="w-full h-full m-16  flex items-center justify-center" ref={containerRef}>
-  <div
-    ref={canvasRef}
-    className="w-full max-w-[1000px] h-full bg-[#f2efe9] rounded-md shadow-inner relative overflow-hidden"
-    onDragOver={(e) => e.preventDefault()}
-    onDrop={(e) => {
-      e.preventDefault()
-      const src = e.dataTransfer.getData("text/plain")
-      if (src) dispatch(setActiveImage(src))
-    }}
-  >
-    <div className="absolute top-3 right-3 flex gap-2 z-20">
-      <button onClick={() => zoom(1.1)} className="px-2 py-1 bg-white rounded border shadow-sm text-xs md:text-sm">Zoom +</button>
-      <button onClick={() => zoom(0.9)} className="px-2 py-1 bg-white rounded border shadow-sm text-xs md:text-sm">Zoom -</button>
-      <button onClick={onReset} className="px-2 py-1 bg-white rounded border shadow-sm text-xs md:text-sm">Reset</button>
+    <div className="w-full h-full max-h-screen  flex items-center py-4 px-8 justify-center" ref={containerRef}>
+      <div
+        ref={canvasRef}
+        className="w-full max-w-[1000px] h-full rounded-md shadow-inner relative overflow-hidden"
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault()
+          const src = e.dataTransfer.getData("text/plain")
+          if (src) dispatch(setActiveImage(src))
+        }}
+      >
+        <div className="absolute top-0 right-0 flex gap-2 z-20">
+          {/* <button onClick={() => zoom(1.1)} className="px-2 py-1 bg-[#D4AF37] rounded border shadow-sm text-xs md:text-sm">Zoom +</button> */}
+          <button
+            onClick={() => zoom(1.1)}
+            className="px-2 py-1 pb-1.5 md:px-3 rounded-md border-[#295aac] text-[#295aac] space-x-2 flex flex-rows items-center justify-center border bg-[#262d38]  text-xs md:text-sm"
+          >
+            <h5 className ="font-semibold">Zoom +</h5>
+          </button>
+          <button
+            onClick={() => zoom(0.9)} 
+            className="px-2 py-1 pb-1.5 md:px-3 rounded-md border-[#295aac] text-[#295aac] space-x-2 flex flex-rows items-center justify-center border bg-[#262d38]  text-xs md:text-sm"
+          >
+            <h5 className ="font-semibold">Zoom -</h5>
+          </button>
+          <button
+            onClick={onReset}
+            className="px-2 py-1 pb-1.5 md:px-3 rounded-md border-[#295aac] text-[#295aac] space-x-2 flex flex-rows items-center justify-center border bg-[#262d38]  text-xs md:text-sm"
+          >
+            <Undo2 size={16} />
+            <h5 className ="font-semibold">Reset</h5>
+          </button>
+          {/* <button onClick={() => zoom(0.9)} className="px-2 py-1 bg-white rounded border shadow-sm text-xs md:text-sm">Zoom -</button>
+          <button onClick={onReset} className="px-2 py-1 bg-white rounded border shadow-sm text-xs md:text-sm">Reset</button> */}
+        </div>
+        <div className="absolute left-2 md:left-4 bottom-2 md:bottom-4 text-xs  text-gray-500 z-20">
+          Drag image from left panel into frame; use Zoom buttons to scale.
+          You can drag/resize/rotate the frame; image + clip mask follow automatically.
+        </div>
+      </div>
     </div>
-    <div className="absolute left-2 md:left-4 bottom-2 md:bottom-4 text-xs md:text-sm text-gray-500 z-20">
-      Drag image from left panel into frame; use Zoom buttons to scale.
-      You can drag/resize/rotate the frame; image + clip mask follow automatically.
-    </div>
-  </div>
-</div>
-
   )
 }
