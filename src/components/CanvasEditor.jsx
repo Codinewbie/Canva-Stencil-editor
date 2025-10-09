@@ -31,32 +31,32 @@ export default function CanvasEditor() {
     fabricRef.current = c
 
     function resize() {
-  const rect = containerRef.current.getBoundingClientRect()
-  const c = fabricRef.current
-  c.setWidth(rect.width)
-  c.setHeight(rect.height)
-  c.calcOffset()
+      const rect = containerRef.current.getBoundingClientRect()
+      const c = fabricRef.current
+      c.setWidth(rect.width)
+      c.setHeight(rect.height)
+      c.calcOffset()
 
-  if (c.frameRect && c.maskRect) {
-    // Move frame and mask
-    centerFrame(c)
+      if (c.frameRect && c.maskRect) {
+        // Re-center frame & mask relative to new canvas size
+        centerFrame(c)
 
-    // Move attached image with mask
-    if (imageObjRef.current) {
-      const img = imageObjRef.current
-      const mask = c.maskRect
-      img.left = mask.left + mask.width / 2
-      img.top = mask.top + mask.height / 2
-      if (img.clipPath) {
-        img.clipPath.left = mask.left + mask.width / 2
-        img.clipPath.top = mask.top + mask.height / 2
-        img.clipPath.setCoords()
+        // Move attached image with mask (keeps it centered)
+        if (imageObjRef.current) {
+          const img = imageObjRef.current
+          const mask = c.maskRect
+          img.left = mask.left + mask.width / 2
+          img.top = mask.top + mask.height / 2
+          if (img.clipPath) {
+            img.clipPath.left = mask.left + mask.width / 2
+            img.clipPath.top = mask.top + mask.height / 2
+            img.clipPath.setCoords()
+          }
+          img.setCoords()
+          c.requestRenderAll()
+        }
       }
-      img.setCoords()
-      c.requestRenderAll()
     }
-  }
-}
 
     window.addEventListener('resize', resize)
     resize()
@@ -185,44 +185,44 @@ export default function CanvasEditor() {
   }, [activeImage])
 
   function centerFrame(c) {
-  const cw = c.getWidth()
-  const ch = c.getHeight()
-  const { width: w, height: h } = stencil
+    const cw = c.getWidth()
+    const ch = c.getHeight()
+    const { width: w, height: h } = stencil
 
-  // 20px above exact center
-  const left = (cw - w) / 2 -20;
-  const top = (ch - h) / 2 - 20
+    // 20px above exact center
+    const left = (cw - w) / 2 - 20
+    const top = (ch - h) / 2 - 20
 
-  const mask = c.maskRect
-  const frame = c.frameRect
+    const mask = c.maskRect
+    const frame = c.frameRect
 
-  if (mask) mask.set({ left, top, width: w, height: h })
-  if (frame) frame.set({ left: left + w / 2, top: top + h / 2 })
+    if (mask) mask.set({ left, top, width: w, height: h })
+    if (frame) frame.set({ left: left + w / 2, top: top + h / 2 })
 
-  // move attached image
-  if (imageObjRef.current) {
-    const img = imageObjRef.current
-    img.left = mask.left + mask.width / 2
-    img.top = mask.top + mask.height / 2
-    if (img.clipPath) {
-      img.clipPath.left = mask.left + mask.width / 2
-      img.clipPath.top = mask.top + mask.height / 2
-      img.clipPath.setCoords()
+    // move attached image (if present)
+    if (imageObjRef.current && mask) {
+      const img = imageObjRef.current
+      img.left = mask.left + mask.width / 2
+      img.top = mask.top + mask.height / 2
+      if (img.clipPath) {
+        img.clipPath.left = mask.left + mask.width / 2
+        img.clipPath.top = mask.top + mask.height / 2
+        img.clipPath.setCoords()
+      }
+      img.setCoords()
     }
-    img.setCoords()
+
+    c.requestRenderAll()
   }
-
-  c.requestRenderAll()
-}
-
 
   function createFrame(c) {
     const cw = c.getWidth()
     const ch = c.getHeight()
     const { width: w, height: h, rx } = stencil
-    const left = (cw / 2) - (w / 2) -20
+    const left = (cw / 2) - (w / 2) - 20
     const top = (ch / 2) - (h / 2) - 20 // 20px above center
 
+    // mask (clipping rect) - not evented/selectable
     const maskRect = new Fabric.fabric.Rect({
       left, top, width: w, height: h, rx,
       originX: 'left', originY: 'top',
@@ -233,6 +233,7 @@ export default function CanvasEditor() {
     c.add(maskRect)
     c.maskRect = maskRect
 
+    // frame visible rect - selectable (this is what user manipulates)
     const frameRect = new Fabric.fabric.Rect({
       left: left + w / 2, top: top + h / 2,
       originX: 'center', originY: 'center',
@@ -248,6 +249,17 @@ export default function CanvasEditor() {
     frameRect.isFrame = true
     c.add(frameRect)
     c.frameRect = frameRect
+
+    // store initial frame/mask state so we can reset later
+    c._initialFrame = {
+      left,
+      top,
+      width: w,
+      height: h,
+      angle: 0,
+      frameLeft: frameRect.left,
+      frameTop: frameRect.top
+    }
   }
 
   function addImageToCanvas(src) {
@@ -319,9 +331,44 @@ export default function CanvasEditor() {
   }
 
   function onReset() {
-    const img = imageObjRef.current
     const c = fabricRef.current
-    if (!img) return
+    if (!c) return
+
+    // Reset frame/mask to initial stored values (if available)
+    if (c._initialFrame && c.maskRect && c.frameRect) {
+      const init = c._initialFrame
+
+      // reset mask
+      c.maskRect.set({
+        left: init.left,
+        top: init.top,
+        width: init.width,
+        height: init.height,
+        angle: init.angle || 0
+      })
+      c.maskRect.setCoords()
+
+      // reset frame (visual rect)
+      c.frameRect.set({
+        left: init.left + init.width / 2,
+        top: init.top + init.height / 2,
+        width: init.width,
+        height: init.height,
+        angle: init.angle || 0,
+        scaleX: 1,
+        scaleY: 1
+      })
+      c.frameRect.setCoords()
+    }
+
+    // Reset image inside the mask (if present)
+    const img = imageObjRef.current
+    if (!img) {
+      c.requestRenderAll()
+      dispatch(resetTransform())
+      return
+    }
+
     const mask = c.maskRect
     const minScale = Math.max(mask.width / img.width, mask.height / img.height)
     img.scale(minScale)
@@ -329,12 +376,18 @@ export default function CanvasEditor() {
     img.top = mask.top + mask.height / 2
     img.angle = 0
     img.setCoords()
+
     if (img.clipPath) {
-      img.clipPath.left = mask.left + mask.width / 2
-      img.clipPath.top = mask.top + mask.height / 2
-      img.clipPath.angle = 0
+      img.clipPath.set({
+        left: mask.left + mask.width / 2,
+        top: mask.top + mask.height / 2,
+        width: mask.width,
+        height: mask.height,
+        angle: 0
+      })
       img.clipPath.setCoords()
     }
+
     c.requestRenderAll()
     dispatch(resetTransform())
   }
@@ -352,28 +405,25 @@ export default function CanvasEditor() {
         }}
       >
         <div className="absolute top-0 right-0 flex gap-2 z-20">
-          {/* <button onClick={() => zoom(1.1)} className="px-2 py-1 bg-[#D4AF37] rounded border shadow-sm text-xs md:text-sm">Zoom +</button> */}
           <button
             onClick={() => zoom(1.1)}
-            className="px-2 py-1 pb-1.5 md:px-3 rounded-md border-[#295aac] text-[#295aac] space-x-2 flex flex-rows items-center justify-center border bg-[#262d38]  text-xs md:text-sm"
+            className="px-2 py-1 pb-1.5 md:px-3 rounded-md border-[#295aac] text-[#295aac] space-x-2 flex items-center justify-center border bg-[#262d38]  text-[8px] md:text-sm"
           >
             <h5 className ="font-semibold">Zoom +</h5>
           </button>
           <button
-            onClick={() => zoom(0.9)} 
-            className="px-2 py-1 pb-1.5 md:px-3 rounded-md border-[#295aac] text-[#295aac] space-x-2 flex flex-rows items-center justify-center border bg-[#262d38]  text-xs md:text-sm"
+            onClick={() => zoom(0.9)}
+            className="px-2 py-1 pb-1.5 md:px-3 rounded-md border-[#295aac] text-[#295aac] space-x-2 flex items-center justify-center border bg-[#262d38]  text-[8px] md:text-sm"
           >
             <h5 className ="font-semibold">Zoom -</h5>
           </button>
           <button
             onClick={onReset}
-            className="px-2 py-1 pb-1.5 md:px-3 rounded-md border-[#295aac] text-[#295aac] space-x-2 flex flex-rows items-center justify-center border bg-[#262d38]  text-xs md:text-sm"
+            className="px-2 py-1 pb-1.5 md:px-3 rounded-md border-[#295aac] text-[#295aac] space-x-2 flex items-center justify-center border bg-[#262d38]  text-[8px] md:text-sm"
           >
             <Undo2 size={16} />
             <h5 className ="font-semibold">Reset</h5>
           </button>
-          {/* <button onClick={() => zoom(0.9)} className="px-2 py-1 bg-white rounded border shadow-sm text-xs md:text-sm">Zoom -</button>
-          <button onClick={onReset} className="px-2 py-1 bg-white rounded border shadow-sm text-xs md:text-sm">Reset</button> */}
         </div>
         <div className="absolute left-2 md:left-4 bottom-2 md:bottom-4 text-xs  text-gray-500 z-20">
           Drag image from left panel into frame; use Zoom buttons to scale.

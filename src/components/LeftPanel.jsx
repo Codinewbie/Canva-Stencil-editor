@@ -97,3 +97,17 @@ export default function LeftPanel({ toggleLeftPanel }) {
     </div>
   )
 }
+
+
+{/* <div className="border-[#295aac] p-1 flex justify-start items-center rounded-md px-2 border space-x-2 ">
+            <div className="h-7 w-7 bg-gray-100  z-20 text-center flex justify-center  items-center rounded-full overflow-hidden">
+                <img
+                    src={aman} // Path relative to the public folder
+                    alt="aman image"
+                    width={40}
+                    height={40}
+                    className="object-cover rounded-full"
+                />
+            </div>
+            <div className="flex text-sm text-gray-500 font-bold items-center justify-center mb-1">Aman Kumar</div>
+        </div> */}
